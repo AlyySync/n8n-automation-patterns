@@ -1,0 +1,9 @@
+{
+  "name": "Retry transient HTTP failures",
+  "nodes": [
+    {"parameters": {"amount": 3, "unit": "seconds"}, "name": "Wait before retry", "type": "n8n-nodes-base.wait", "typeVersion": 1.1, "position": [700, 300]},
+    {"parameters": {"conditions": {"string": [{"value1": "={{$json.status}}", "operation": "startsWith", "value2": "5"}]}}, "name": "Is transient failure?", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [460, 300]},
+    {"parameters": {"url": "={{$json.retry_url}}", "options": {"response": {"response": {"neverError": true}}}}, "name": "Call API", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [220, 300]}
+  ],
+  "connections": {"Call API": {"main": [[{"node": "Is transient failure?", "type": "main", "index": 0}]]}, "Is transient failure?": {"main": [[{"node": "Wait before retry", "type": "main", "index": 0}], []]}, "Wait before retry": {"main": [[{"node": "Call API", "type": "main", "index": 0}]]}}
+}
