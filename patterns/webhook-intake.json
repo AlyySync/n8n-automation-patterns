@@ -1,0 +1,9 @@
+{
+  "name": "Webhook intake - validate and normalize",
+  "nodes": [
+    {"parameters": {"httpMethod": "POST", "path": "intake", "responseMode": "responseNode"}, "name": "Receive webhook", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [260, 300]},
+    {"parameters": {"jsCode": "const body = $json.body ?? $json;\nif (!body.event_id || !body.email) throw new Error('event_id and email are required');\nreturn [{json: {event_id: String(body.event_id), email: String(body.email).trim().toLowerCase(), received_at: new Date().toISOString()}}];"}, "name": "Validate and normalize", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [500, 300]},
+    {"parameters": {"respondWith": "json", "responseBody": "={\"accepted\": true, \"event_id\": \"{{$json.event_id}}\"}"}, "name": "Respond", "type": "n8n-nodes-base.respondToWebhook", "typeVersion": 1, "position": [740, 300]}
+  ],
+  "connections": {"Receive webhook": {"main": [[{"node": "Validate and normalize", "type": "main", "index": 0}]]}, "Validate and normalize": {"main": [[{"node": "Respond", "type": "main", "index": 0}]]}}
+}
